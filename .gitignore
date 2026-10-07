@@ -9,9 +9,20 @@ target/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.idea
 *.iws
 *.iml
 *.ipr
+
+# Allure generated files
+.allure/
+allure-results/
+
+# Logs
+*.log
+
+# Generated source dump
+TestFramework.txt
 
 ### Eclipse ###
 .apt_generated
