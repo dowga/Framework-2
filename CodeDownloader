@@ -1,0 +1,12 @@
+Get-ChildItem -Recurse -File `
+    -Include *.java,*.html,*.properties,*.xml,*.yml,*.yaml `
+    -Exclude *.class `
+    | Where-Object {
+        $_.FullName -notmatch '\\target\\' -and
+        $_.FullName -notmatch '\\.idea\\'
+    } `
+    | ForEach-Object {
+        "==================== $($_.FullName) ===================="
+        Get-Content $_.FullName
+        ""
+    } | Out-File TestFramework.txt -Encoding UTF8
