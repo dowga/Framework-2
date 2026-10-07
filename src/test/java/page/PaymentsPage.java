@@ -16,6 +16,7 @@ public class PaymentsPage {
         return this;
     }
 
+    @Step("Проверить открывается ли сайт")
     public PaymentsPage shouldBeOpened() {
         pageTitle
                 .shouldBe(visible)
@@ -28,6 +29,8 @@ public class PaymentsPage {
             return $x("//tbody/tr[td[1][normalize-space()='" + paymentId + "']]");
     }
 
+
+    @Step("Проверить наличие платежа {paymentId}")
     public PaymentsPage shouldHavePayment(
             Long paymentId,
             String recipient,

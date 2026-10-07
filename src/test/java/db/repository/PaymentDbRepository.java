@@ -27,7 +27,6 @@ public class PaymentDbRepository {
                 WHERE id = ?
                 """;
 
-        System.out.println("DB QUERY: find payment by id = " + id);
 
         try (
                 Connection connection = DriverManager.getConnection(
@@ -40,24 +39,15 @@ public class PaymentDbRepository {
                         connection.prepareStatement(sql)
         ) {
 
-            System.out.println(
-                    "DB CONNECTED: " +
-                            connection.getMetaData().getURL()
-            );
 
             statement.setLong(1, id);
 
             try (ResultSet resultSet = statement.executeQuery()) {
 
                 if (!resultSet.next()) {
-                    System.out.println("DB RESULT: payment not found");
                     return Optional.empty();
                 }
 
-                System.out.println(
-                        "DB RESULT: payment found, id = " +
-                                resultSet.getLong("id")
-                );
 
                 PaymentDb payment = new PaymentDb(
                         resultSet.getLong("id"),

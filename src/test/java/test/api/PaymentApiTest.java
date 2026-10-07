@@ -185,7 +185,7 @@ public class PaymentApiTest {
 
 
     @Test
-    void ShouldUpdatePayment(){
+    void shouldUpdatePayment(){
         PaymentResponse createdPayment =
                 paymentSteps.createValidPayment();
 
