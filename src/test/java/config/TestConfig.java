@@ -48,4 +48,11 @@ public class TestConfig {
                 )
         );
     }
+
+    public static String getKafkaBootstrapServers() {
+        return System.getProperty(
+                "kafkaBootstrapServers",
+                "localhost:9092"
+        );
+    }
 }

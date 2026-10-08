@@ -20,6 +20,7 @@
         <selenide.version>7.10.1</selenide.version>
         <allure.version>2.35.4</allure.version>
         <aspectj.version>1.9.24</aspectj.version>
+        <kafka.version>4.3.1</kafka.version>
     </properties>
 
     <dependencyManagement>
@@ -101,6 +102,13 @@
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${kafka.version}</version>
             <scope>test</scope>
         </dependency>
 
