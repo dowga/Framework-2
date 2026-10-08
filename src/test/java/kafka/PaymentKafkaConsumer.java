@@ -10,12 +10,17 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 public class PaymentKafkaConsumer implements AutoCloseable {
 
     private static final String TOPIC = "payment-events";
 
     private final KafkaConsumer<String, String> consumer;
+
+    private final Queue<ConsumerRecord<String, String>> buffer =
+            new ArrayDeque<>();
 
     public PaymentKafkaConsumer() {
 
@@ -90,14 +95,11 @@ public class PaymentKafkaConsumer implements AutoCloseable {
 
         while (System.nanoTime() < deadline) {
 
-            ConsumerRecords<String, String> records =
-                    consumer.poll(Duration.ofMillis(500));
+            ConsumerRecord<String, String> record = nextRecord();
 
-            for (ConsumerRecord<String, String> record : records) {
-
-                if (paymentId.toString().equals(record.key())) {
-                    return record;
-                }
+            if (record != null
+                    && paymentId.toString().equals(record.key())) {
+                return record;
             }
         }
 
@@ -105,6 +107,22 @@ public class PaymentKafkaConsumer implements AutoCloseable {
                 "Не получили Kafka-событие для paymentId=" + paymentId
         );
     }
+
+    private ConsumerRecord<String, String> nextRecord() {
+
+        if (buffer.isEmpty()) {
+
+            ConsumerRecords<String, String> records =
+                    consumer.poll(Duration.ofMillis(200));
+
+            for (ConsumerRecord<String, String> record : records) {
+                buffer.add(record);
+            }
+        }
+
+        return buffer.poll();
+    }
+
 
     @Override
     public void close() {
@@ -116,24 +134,21 @@ public class PaymentKafkaConsumer implements AutoCloseable {
             Long paymentId,
             Duration timeout) {
 
-        long deadline =
-                System.nanoTime() + timeout.toNanos();
+        long deadline = System.nanoTime() + timeout.toNanos();
 
         while (System.nanoTime() < deadline) {
 
-            ConsumerRecords<String, String> records =
-                    consumer.poll(Duration.ofMillis(500));
+            ConsumerRecord<String, String> record = nextRecord();
 
-            for (ConsumerRecord<String, String> record : records) {
+            if (record != null
+                    && paymentId.toString().equals(record.key())) {
 
-                if (paymentId.toString().equals(record.key())) {
-                    throw new AssertionError(
-                            "Обнаружено неожиданное Kafka-событие "
-                                    + "для paymentId=" + paymentId
-                                    + ", offset=" + record.offset()
-                                    + ", partition=" + record.partition()
-                    );
-                }
+                throw new AssertionError(
+                        "Обнаружено неожиданное Kafka-событие "
+                                + "для paymentId=" + paymentId
+                                + ", partition=" + record.partition()
+                                + ", offset=" + record.offset()
+                );
             }
         }
     }

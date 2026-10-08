@@ -82,6 +82,12 @@ public class PaymentKafkaTest {
 
             assertThat(event.status())
                     .isEqualTo("executed");
+
+            // Проверяем, что не появилось второго события
+            kafka.assertNoEventForPaymentId(
+                    paymentId,
+                    Duration.ofSeconds(3)
+            );
         }
     }
 
